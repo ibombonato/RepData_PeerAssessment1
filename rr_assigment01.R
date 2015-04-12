@@ -11,7 +11,6 @@ data <- read.csv(fileName)
 # Calculate and report the mean and median total number of steps taken per day
 library(dplyr)
 library(lubridate)
-str(data)
 
 steps_by_day <- data %>% na.omit() %>% group_by(date) %>% summarise(steps = sum(steps))
 hist(steps_by_day$steps, main = "Histogram of steps per day", xlab="Steps")
@@ -54,44 +53,44 @@ totalNA <- sum(!complete.cases(data))
 # For example, you could use the mean/median for that day, or the mean for 
 # that 5-minute interval, etc.
 missingData <- data[!complete.cases(data),]
-head(steps_by_interval)
-head(missingData)
-tail(missingData)
-addMeanByInterval <- function(x, d){
-    #steps_by_interval[steps_by_interval$interval == x]
-    z <- as.character(x)
-    y <- d %>% filter(interval == z %>% select(stepsMean)
-    #x$steps = 1
-    print(paste('Valor de x:', as.character(x)))
-    print(paste('Valor de y:', as.character(y)))
-    as.numeric(y)
-}
-head(missingData)
-nrow(missingData)
 for (i in 1:nrow(missingData)){
     missingData[i, 1] <- steps_by_interval %>% 
         filter(interval == missingData[i,3]) %>% 
         select(stepsMean)    
 }
 
-missingData[1,3]
-
-missingData %>% mutate(newSteps = sapply(interval, addMeanByInterval(interval, steps_by_interval)))
-
-missingData %>% rowwise() %>% do(newSteps = addMeanByInterval(interval, steps_by_interval)) %>% mutate(newSteps = c(stepsNovo))
-    head(apply(missingData, 1, addMeanByInterval))
-    addMeanByInterval(2355)
-head(mutate(missingData, stepsNovo = addMeanByInterval(as.numeric(interval), steps_by_interval)))
-sapply(missingData, x = missingData$interval, FUN = addMeanByInterval(missingData$interval, steps_by_interval))
-
-data %>% mutate(prob = sapply(value, function(x) sum(x < value) / nrow(data)))
-
 # Create a new dataset that is equal to the original dataset but with the missing 
 # data filled in.
-# 
+
+df <- rbind(data[complete.cases(data),], missingData)
+
 # Make a histogram of the total number of steps taken each day and Calculate and 
 # report the mean and median total number of steps taken per day. 
+
+steps_by_day_complete <- df %>% na.omit() %>% group_by(date) %>% summarise(steps = sum(steps))
+hist(steps_by_day_complete$steps, main = "Histogram of steps per day", xlab="Steps")
+
+mean(steps_by_day_complete$steps, na.rm = TRUE)
+median(steps_by_day_complete$steps, na.rm = TRUE)
+
 # Do these values differ from the estimates from the first part of the assignment?
+opar <- par()
+par(opar)
+par(mfrow = c(1,2))
+steps_by_day <- data %>% na.omit() %>% group_by(date) %>% summarise(steps = sum(steps))
+hist(steps_by_day$steps, ylim = c(0, 40), xlab = "Steps", main = "Original values")
+
+steps_by_day_complete <- df %>% na.omit() %>% group_by(date) %>% summarise(steps = sum(steps))
+hist(steps_by_day_complete$steps, ylim = c(0, 40), xlab = "Steps", main = "Replaced NAs")
+
+mean(steps_by_day$steps, na.rm = TRUE)
+median(steps_by_day$steps, na.rm = TRUE)
+
+mean(steps_by_day_complete$steps, na.rm = TRUE)
+median(steps_by_day_complete$steps, na.rm = TRUE)
+
 # What is the impact of imputing missing data on the estimates of the total daily 
 # number of steps?
+
+#R: None, since the mean and median are the same as in the original data
 
