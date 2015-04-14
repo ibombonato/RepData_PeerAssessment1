@@ -131,3 +131,7 @@ plot(x = dfWeekday$interval, y = dfWeekday$steps,
      type = "l" , main = "Average steps by interval(Weekday)",
      ylab = "Number of teps",
      xlab = "Interval")
+
+
+library(knitr)
+knit2html("PA1_template.Rmd")
