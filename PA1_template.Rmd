@@ -58,11 +58,11 @@ plot(x = steps_by_interval$interval, y = steps_by_interval$stepsMean,
 
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 ```{r}
-topIntervalValue <- filter(steps_by_interval, stepsMean == max(stepsMean)) %>% select(interval)
-topIntervalValue
+top_interval_value <- filter(steps_by_interval, stepsMean == max(stepsMean)) %>% select(interval)
+top_interval_value
 ```
 
-The 5-minute that contains the maximum number of steps is: `r topIntervalValue[[1]]`  
+The 5-minute that contains the maximum number of steps is: `r top_interval_value[[1]]`  
 
 We can plot a line that prove it:
 ```{r}
@@ -71,18 +71,55 @@ plot(x = steps_by_interval$interval, y = steps_by_interval$stepsMean,
      ylab = "Mean of Steps",
      xlab = "Interval")
 
-abline(v = topIntervalValue, col = "red", lty = 3)
-axis(1, at=topIntervalValue[[1]],labels=topIntervalValue[[1]], col.axis="red", cex.axis=0.7, tck=-.03)
+abline(v = top_interval_value, col = "red", lty = 3)
+axis(1, at=top_interval_value[[1]],labels=top_interval_value[[1]], col.axis="red", cex.axis=0.7, tck=-.03)
 ```
 
 ## Imputing missing values
 
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 ```{r}
-totalNA <- sum(!complete.cases(data))
-totalNA
+total_na <- sum(!complete.cases(data))
+total_na
 ```
 
-The total number of NA is `r totalNA`
+The total number of NA is `r total_na`
 
+2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+Here, we will take the mean by interval and use it for the missing values
+```{r}
+missing_data <- data[!complete.cases(data),]
+for (i in 1:nrow(missing_data)){
+    missing_data[i, 1] <- steps_by_interval %>% 
+        filter(interval == missing_data[i,3]) %>% 
+        select(stepsMean)    
+}
+```
+
+After treatment, the total of missing data is: `r sum(is.na(missing_data))`
+
+3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+```{r}
+df <- rbind(data[complete.cases(data),], missing_data)
+```
+
+4. Make a histogram of the total number of steps taken each day.
+```{r}
+steps_by_day_complete <- df %>% na.omit() %>% group_by(date) %>% summarise(steps = sum(steps))
+hist(steps_by_day_complete$steps, main = "Histogram of steps per day", xlab="Steps")
+```
+
+* Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```{r}
+total_mean <- mean(steps_by_day_complete$steps, na.rm = TRUE)
+total_median <- median(steps_by_day_complete$steps, na.rm = TRUE)
+total_mean
+total_median
+```
+
+The new mean is: `r total_mean`  
+
+The new median is: `r total_median`  
 ## Are there differences in activity patterns between weekdays and weekends?
