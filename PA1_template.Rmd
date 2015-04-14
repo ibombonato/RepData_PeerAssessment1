@@ -137,3 +137,36 @@ hist(steps_by_day_complete$steps, ylim = c(0, 40), xlab = "Steps", main = "Repla
 Since we used the mean by each interval for filling the missing data, we dont have a big impact on the data, the only thing that change was the frequency for the mean value in the new data and the mean now is equal to the median.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+
+We will use the lubridate and dplyr package, that was already required to manipulate the data
+```{r}
+df$date <- ymd(df$date)
+df <- mutate(df, weekday = 
+                 ifelse(wday(date)  %in% c(1,2), 
+                        yes = "weekend", 
+                        no = "weekday"
+            ))
+df$weekday = as.factor(df$weekday)
+```
+
+2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
+
+Spliting the data for weekend and weekdays
+```{r}
+group_by_weekday <- df %>% select(steps, interval, weekday) %>% 
+    group_by(weekday, interval) %>% summarise(steps = mean(steps))
+
+dfWeekend <- filter(group_by_weekday, weekday == "weekend")
+dfWeekday <- filter(group_by_weekday, weekday == "weekday")
+```
+
+Plotting the data
+```{r}
+par(mfcol = c(2, 1), mar=c(2, 2, 2, 2) + 0.1)
+plot(x = dfWeekend$interval, y = dfWeekend$steps, 
+     type = "l" , main = "Average steps by interval (Weekend)")
+plot(x = dfWeekday$interval, y = dfWeekday$steps, 
+     type = "l" , main = "Average steps by interval (Weekday)")
+```
