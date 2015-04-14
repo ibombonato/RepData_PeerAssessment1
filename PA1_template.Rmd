@@ -41,9 +41,9 @@ steps_median <- median(steps_by_day$steps, na.rm = TRUE)
 steps_mean
 steps_median
 ```
-The mean is: `r steps_mean`  
+The mean is: **`r steps_mean`**
 
-The median is: `r steps_median`  
+The median is: **`r steps_median`**  
 
 ## What is the average daily activity pattern?
 
@@ -62,7 +62,7 @@ top_interval_value <- filter(steps_by_interval, stepsMean == max(stepsMean)) %>%
 top_interval_value
 ```
 
-The 5-minute that contains the maximum number of steps is: `r top_interval_value[[1]]`  
+The 5-minute that contains the maximum number of steps is: **`r top_interval_value[[1]]`**  
 
 We can plot a line that prove it:
 ```{r}
@@ -83,7 +83,7 @@ total_na <- sum(!complete.cases(data))
 total_na
 ```
 
-The total number of NA is `r total_na`
+The total number of NA is **`r total_na`**
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
@@ -97,7 +97,7 @@ for (i in 1:nrow(missing_data)){
 }
 ```
 
-After treatment, the total of missing data is: `r sum(is.na(missing_data))`
+After treatment, the total of missing data is: **`r sum(is.na(missing_data))`**
 
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 ```{r}
@@ -110,7 +110,7 @@ steps_by_day_complete <- df %>% na.omit() %>% group_by(date) %>% summarise(steps
 hist(steps_by_day_complete$steps, main = "Histogram of steps per day", xlab="Steps")
 ```
 
-* Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+* Calculate and report the mean and median total number of steps taken per day. 
 
 ```{r}
 total_mean <- mean(steps_by_day_complete$steps, na.rm = TRUE)
@@ -119,7 +119,21 @@ total_mean
 total_median
 ```
 
-The new mean is: `r total_mean`  
+The new mean is: **`r total_mean`** 
 
-The new median is: `r total_median`  
+The new median is: **`r total_median`**  
+
+* Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```{r}
+par(mfrow = c(1,2))
+steps_by_day <- data %>% na.omit() %>% group_by(date) %>% summarise(steps = sum(steps))
+hist(steps_by_day$steps, ylim = c(0, 40), xlab = "Steps", main = "Original values")
+
+steps_by_day_complete <- df %>% na.omit() %>% group_by(date) %>% summarise(steps = sum(steps))
+hist(steps_by_day_complete$steps, ylim = c(0, 40), xlab = "Steps", main = "Replaced NAs")
+```
+
+Since we used the mean by each interval for filling the missing data, we dont have a big impact on the data, the only thing that change was the frequency for the mean value in the new data and the mean now is equal to the median.
+
 ## Are there differences in activity patterns between weekdays and weekends?
