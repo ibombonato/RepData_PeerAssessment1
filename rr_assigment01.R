@@ -32,10 +32,10 @@ plot(x = steps_by_interval$interval, y = steps_by_interval$stepsMean,
 
 # Which 5-minute interval, on average across all the days in the dataset, 
 # contains the maximum number of steps?
-abline(v = topIntervalValue, col = "red", lty = 3)
 topIntervalValue <- filter(steps_by_interval, stepsMean == max(stepsMean)) %>% select(interval)
-axis(1, at=836,labels=836, col.axis="red", cex.axis=0.7, tck=-.03)
-
+abline(v = topIntervalValue, col = "red", lty = 3)
+axis(1, at=topIntervalValue[[1]],labels=topIntervalValue[[1]], col.axis="red", cex.axis=0.7, tck=-.03)
+topIntervalValue[[1]]
 # Imputing missing values
 # 
 # Note that there are a number of days/intervals where there are missing 
